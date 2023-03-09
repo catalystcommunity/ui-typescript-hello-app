@@ -62,6 +62,8 @@ helloAppTemplate.innerHTML = `
 <hello-item caller="Caldo"></hello-item>
 <table-control></table-control>
 <test-header>Something Inner</test-header>
+<table-control></table-control>
+<test-header>Both controls work, because reasons</test-header>
 <hello-table id="mainTable" rows="20" fields="7" strings="5"></hello-table>
 `
 class HelloApp extends HTMLElement {
@@ -99,30 +101,30 @@ class TableControl extends HTMLElement {
     this.rows = 10;
     this.fields = 5;
     this.strings = 2;
-    this.shadow = this.attachShadow({ mode: 'open' });
+    // this.shadow = this.attachShadow({ mode: 'open' });
     this.handleChange = this.handleChange.bind(this);
   }
   connectedCallback() {
     this.render()
   }
   render() {
-    this.shadow.innerHTML = '';
-    this.shadow.append(tableControlTemplate.content.cloneNode(true));
-    let rows = this.shadow.querySelector('#rows');
+    this.innerHTML = '';
+    this.append(tableControlTemplate.content.cloneNode(true));
+    let rows: HTMLInputElement|null = (<HTMLInputElement>this.querySelector('#rows'));
     rows.value = String(this.rows);
     rows.addEventListener('change', this.handleChange);
-    let fields = this.shadow.querySelector('#fields');
+    let fields: HTMLInputElement|null = (<HTMLInputElement>this.querySelector('#fields'));
     fields.value = String(this.fields);
     fields.addEventListener('change', this.handleChange);
-    let strings = this.shadow.querySelector('#strings');
+    let strings: HTMLInputElement|null = (<HTMLInputElement>this.querySelector('#strings'));
     strings.value = String(this.strings);
     strings.addEventListener('change', this.handleChange);
   }
 
   handleChange() {
-    this.rows = parseInt(this.shadow.querySelector('#rows').value) || this.rows
-    this.fields = parseInt(this.shadow.querySelector('#fields').value) || this.fields
-    this.strings = parseInt(this.shadow.querySelector('#strings').value) || this.strings
+    this.rows = parseInt((<HTMLInputElement>this.querySelector('#rows')).value) || this.rows
+    this.fields = parseInt((<HTMLInputElement>this.querySelector('#fields')).value) || this.fields
+    this.strings = parseInt((<HTMLInputElement>this.querySelector('#strings')).value) || this.strings
     let table = document.querySelector('#mainTable');
     table?.setAttribute('rows', String(this.rows));
     table?.setAttribute('fields', String(this.fields));
@@ -169,7 +171,7 @@ class HelloTable extends HTMLElement {
     this.rows = 10;
     this.fields = 5;
     this.strings = 2;
-    this.shadow = this.attachShadow({ mode: 'open' });
+    // this.shadow = this.attachShadow({ mode: 'open' });
   }
   static get observedAttributes() {
     return ['rows', 'fields', 'strings'];
@@ -184,9 +186,9 @@ class HelloTable extends HTMLElement {
     this.render()
   }
   render() {
-    this.shadow.innerHTML = '';
-    this.shadow.append(helloTableTemplate.content.cloneNode(true));
-    let table: Element|null = this.shadow.querySelector('#hello-table');
+    this.innerHTML = '';
+    this.append(helloTableTemplate.content.cloneNode(true));
+    let table: Element|null = this.querySelector('#hello-table');
     if (table != null){
       let data = createLists(this.rows, this.fields, this.strings);
       for(let row of data){
