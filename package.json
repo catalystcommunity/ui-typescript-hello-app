@@ -4,8 +4,8 @@
   "description": "Frontend app for the Catalyst Squad Hello World end to end workflow",
   "main": "app.ts",
   "scripts": {
-    "build": "cp -a static/* dist/ && esbuild src/app.ts --bundle --sourcemap --target=chrome58,firefox57,safari11,edge16 --outdir=dist",
-    "dev": "cp -a static/* dist/ && esbuild src/app.ts --bundle --sourcemap --target=chrome58,firefox57,safari11,edge16 --outdir=dist --watch --servedir=dist",
+    "build": "cp -a static/* dist/ && esbuild src/app.ts --bundle --sourcemap --target=chrome58,firefox57,safari11,edge16 --outdir=dist --minify",
+    "dev": "cp -a static/* dist/ && esbuild src/app.ts --bundle --sourcemap --target=chrome58,firefox57,safari11,edge16 --outdir=dist --watch --servedir=dist --minify",
     "test": "test"
   },
   "keywords": [

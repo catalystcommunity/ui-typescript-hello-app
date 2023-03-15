@@ -1,3 +1,4 @@
+import { RegisterRoute, RenderRoute, PushURL } from "./router";
 
 function postMe(name:string, data:string, callback:Function, onError:Function) {
     var request = new XMLHttpRequest();
