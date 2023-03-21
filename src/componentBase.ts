@@ -1,0 +1,35 @@
+// Give us some of the basic functionality to reduce boilerplate
+class BaseComponent extends HTMLElement {
+  changeAttributes: string[];
+  componentTemplate: string | undefined;
+  styleTemplate: string | undefined;
+
+  constructor() {
+    super();
+    this.changeAttributes = [];
+  }
+  get observedAttributes() {
+    return this.changeAttributes;
+  }
+  attributeChangedCallback(property:string, oldValue:string, newValue:string) {
+    if (oldValue === newValue) return;
+    this[ property ] = newValue;
+    this.postAttributeChange();
+  }
+  postAttributeChange() {}
+  connectedCallback() {
+    this.render()
+  }
+  render() {
+  }
+}
+
+class OpenShadowComponent extends BaseComponent {
+  shadow: ShadowRoot;
+  constructor() {
+    super();
+    this.shadow = this.attachShadow({ mode: 'open' });
+  }
+}
+
+export {BaseComponent,OpenShadowComponent}

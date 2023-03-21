@@ -1,11 +1,17 @@
+import { FireEvent } from './eventBroker'
+
 // the string "route" that pairs to the render function
-let routes: Map<string,Function> = new Map<string,Function>;
-let defaultRoute: Function;
-let routeHandler: (string);
+let routes: Map<string,Function> = new Map<string,Function>();
+let routeEquivalents: Map<string,string> = new Map<string,string>();
+let defaultRoute: renderFunc;
+type renderFunc = (path: string) => void
 
 // Define the routes. Each route is described with a route path & a render function
-let RegisterRoute = (path: string, renderFunc: Function, isdefault = false): void => {
+let RegisterRoute = (path: string, renderFunc: renderFunc, otherNames: Array<string> = [], isdefault = false): void => {
   routes[path] = renderFunc;
+  for(const other of otherNames) {
+    routeEquivalents.set(other, path);
+  }
   if (isdefault) {
     defaultRoute = renderFunc
   }
@@ -16,20 +22,29 @@ let UnregisterRoute = (path: string): void => {
   if (path in routes) {
     delete routes[path]
   }
+  routeEquivalents.forEach((other, route) => {
+    console.log('other:', other, 'route:', route)
+    if (route === path) {
+      delete routeEquivalents[other]
+    }
+  });
 };
 
 // Pushstate doesn't cause an event, so to be event driven, we must call a custom one
 let sendChangedEvent = (path: string, state = {}): void => {
-  document.dispatchEvent(new CustomEvent('urlChanged', {detail: {path: path, state: state}}))
+  FireEvent('url-changed', {path: path, state: state})
 };
 
 // Run the route's Render function and return that string to the thing that cares
 let RenderRoute = (path: string) => {
+  if (routeEquivalents.has(path)) {
+    return routes[routeEquivalents.get(path) || ''](path);
+  }
   if (path in routes) {
-    return routes[path]();
+    return routes[path](path);
   }
   if (defaultRoute) {
-    return defaultRoute();
+    return defaultRoute(path);
   }
   throw new Error("The route is not defined");
 };
@@ -47,6 +62,10 @@ let popstateRouter = (e: PopStateEvent) => {
 // URL can be a full url including hashes
 // but the router doesn't care about anything but pathname
 let PushURL = (url: string, state = {}) => {
+  let firstPath = '/' + url.split('/')[1]
+  if (routeEquivalents.has(firstPath)) {
+    url = url.replace(firstPath, routeEquivalents.get(firstPath) || firstPath)
+  }
   window.history.pushState(state, "", url);
   sendChangedEvent(window.location.pathname, state)
 };

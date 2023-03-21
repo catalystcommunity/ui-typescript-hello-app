@@ -1,0 +1,12 @@
+<template id="home-page-template">
+  <h1 class="home-title">The Home Page</h1>
+  <p class="home-paragraph">Hello, this is a small demo of a full app using no frameworks and keeping to browser APIs wherever possible. We're pretty proud of what's possible as we show.</p>
+  <p class="home-paragraph">You can see as you peruse the code that this isn't prescriptive as a workflow. Want to have it fronted by a different webserver? Go for it. Want to include other npm libs? Import as you normally would. Want to switch back to Webpack? It's entirely possible! Do what works best for your project, and not an ounce more.</p>
+</template>
+<template id="about-page-template">
+  <h2 class="about-title">The About Page</h1>
+  <p class="about-paragraph">This is going to be a little weird for some experienced devs who like React or Angular or the like. This approach separates Javascript from HTML/CSS except where it is extremely convenient to have a 3 line template in a string.</p>
+  <p class="about-paragraph">The benefits are pretty clear though, you can design CSS completely separate from the JavaScript, and you are forced to use APIs the browser has the option to optimize over time.</p>
+  <p class="about-paragraph">Not sure how the templating of such a thing would work? Well, <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots">slots</a> exist, but you can also do normal dom manipulation. Like, this will be the last thing you set the hello name to in the other page (which doesn't exist in the DOM at all now, btw).</p>
+  <p class="about-paragraph">Hello <span id="about-name"></span></p>
+</template>

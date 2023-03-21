@@ -1,23 +1,33 @@
-class HelloItem extends HTMLElement {
-    caller: string;
-  
-    constructor() {
-      super();
-      this.caller= 'World'
-      // this.shadow = this.attachShadow({ mode: 'open' });
-      // console.log(typeof(this.shadow))
-      this.innerHTML = `<h1>Hello ${ this.caller }!</h1>`;
+import { BaseComponent } from './componentBase';
+
+let globalCaller = 'World'
+
+const GetCaller = () => {
+  // Note that we could have a closure for encapsulating if we wanted, rather than having this be a global var
+  // but we aren't, for a host of reasons including laziness, but it doesn't add to the demo when you already know you can
+  return globalCaller;
+};
+
+class HelloItem extends BaseComponent {
+  caller: string;
+  shadow: ShadowRoot;
+
+  constructor() {
+    super();
+    this.caller = globalCaller
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.changeAttributes = ['caller']
+    this.render()
+  }
+  connectedCallback() {
+    this.render()
+  }
+  render() {
+    if (this.getAttribute('caller') !== '' && this.getAttribute('caller') !== globalCaller) {
+      globalCaller = this.getAttribute('caller') || 'NewWorld'
     }
-    static get observedAttributes() {
-      return ['caller'];
-    }
-    attributeChangedCallback(property:string, oldValue:string, newValue:string) {
-      if (oldValue === newValue) return;
-      this[ property ] = newValue;
-    }
-    connectedCallback() {
-      this.innerHTML = `<h1>Hello ${ this.caller }!</h1>`;
-    }
+    this.shadow.innerHTML = `<h1>Hello ${ this.caller }!</h1>`;
+  }
 }
   
 const HelloPageTemplate = document.createElement('template')
@@ -25,7 +35,7 @@ HelloPageTemplate.innerHTML = `
 <hello-item caller='Caldo'></hello-item>
 `
 
-class HelloPage extends HTMLElement {
+class HelloPage extends BaseComponent {
   shadow: any;
 
   constructor() {
@@ -41,7 +51,7 @@ class HelloPage extends HTMLElement {
   }
 }
 
-export { HelloPage }
+export { HelloPage, GetCaller }
 
 customElements.define( 'hello-page', HelloPage );
 customElements.define( 'hello-item', HelloItem );

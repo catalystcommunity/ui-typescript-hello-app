@@ -1,103 +1,122 @@
-import { RegisterRoute, RenderRoute, PushURL } from './router';
-import { SubscribeEvent, UnsubscribeEvent, FireEvent} from './eventBroker'
+import { RegisterRoute, RenderRoute, PushURL, UnregisterRoute } from './router';
+import { SubscribeEvent, UnsubscribeEvent, FireEvent} from './eventBroker';
+import { BaseComponent, OpenShadowComponent } from './componentBase';
+// Other components to include
+import './homePage';
+import './aboutPage';
 
-
-function postMe(name:string, data:string, callback:Function, onError:Function) {
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if (request.readyState != 4 || request.status != 200) { return; }
-        var body = JSON.parse(request.responseText);
-        if (body.error) {
-            onError(body.error);
-        }
-        else {
-            callback(body);
-        }
-    };
-    request.open('POST', '/api/' + name, true);
-    request.setRequestHeader('Content-type', 'application/json');
-    request.send(JSON.stringify(data));
-}
-
-
+// The core HelloApp is just there so app changes stay in code-land, not HTML document land
+// This addresses the refresh loop nicely and lets the heavier html/css changes be a separate concern
 const helloAppTemplate = document.createElement('template')
 helloAppTemplate.innerHTML = `
-<custom-menu items='Home,About,Services,Contact'></custom-menu>
-<page-container page='home'></page-container>
+<custom-menu items='Home,About,Tables,Something Else' routes='home-page,about-page,table-experiments,something-else'></custom-menu>
+<page-container page='home-page'></page-container>
 `
-class HelloApp extends HTMLElement {
-  shadow: any;
+class HelloApp extends BaseComponent {
   constructor() {
       super()
       this.append(helloAppTemplate.content.cloneNode(true));
   }
 }
 
-
 // Custom menu element
-class CustomMenu extends HTMLElement {
-  private styleTemplate: string;
-  private menuItems: string[];
+class CustomMenu extends OpenShadowComponent {
+  menuItems: string[];
+  menuRoutes: string[];
+  menu: Map<string, string>;
 
   constructor() {
     super();
-    this.styleTemplate = this.getAttribute('style-template') || 'custom-menu-styles';
+    this.changeAttributes = ['items'];
+    this.styleTemplate = document.getElementById('custom-menu-styles')?.innerHTML || '';
+  }
+
+  handleClick(route: string) {
+    // You don't need to use the router, this does a direct event the page-container handles
+    // FireEvent('page-changed', {newPage: route})
+    PushURL('/'+route)
+  }
+  postAttributeChange(): void {
+    this.setupCore();
+  }
+  connectedCallback() {
+    this.setupCore()
+  }
+  setupCore() {
     this.menuItems = (this.getAttribute('items') || '').split(',');
-    this.attachShadow({ mode: 'open' });
+    this.menuRoutes = (this.getAttribute('routes') || '').split(',');
+    this.menu = new Map<string, string>();
+    this.menuRoutes.reduce((acc, k, i) => {acc.set(k, this.menuItems[i]); return acc}, this.menu)
+    // The object version required different setting
+    // this.menuRoutes.reduce((acc, k, i) => {acc[k] = this.menuItems[i]; return acc}, this.menu)
     this.render();
   }
 
-  private handleClick(item: string) {
-    console.log(`Clicked on menu item: ${item}`);
-    FireEvent('page-changed', {newPage: item})
-  }
+  render() {
+    let list = document.createElement('ul');
 
-  private render() {
-    const template = document.getElementById(this.styleTemplate) as HTMLTemplateElement;
-    const styles = template.content.cloneNode(true);
-    const list = document.createElement('ul');
-
-    this.menuItems.forEach((item) => {
+    // The for .. in syntax doesn't work on maps in all browsers yet
+    this.menu.forEach((item, route) => {
       const listItem = document.createElement('li');
-      listItem.textContent = item.trim();
-      listItem.addEventListener('click', () => this.handleClick(item.trim()));
+      listItem.innerHTML =  `<span class='menu-item'>${item.trim()}</span>`;
+      listItem.addEventListener('click', () => this.handleClick(route.trim()));
       list.appendChild(listItem);
     });
 
-    this.shadowRoot!.appendChild(styles);
-    this.shadowRoot!.appendChild(list);
+    // This has to be first, because we're seting it as a string in its entirety
+    this.shadow.innerHTML = this.styleTemplate || '';
+    this.shadow.appendChild(list);
   }
 }
 
-class PageContainer extends HTMLElement {
-  private templateName: string;
+class PageContainer extends OpenShadowComponent {
+  page: string = 'home-page';
 
   constructor() {
     super();
-    this.templateName = this.getAttribute('template-name') || 'page-container-styles';
-    this.attachShadow({ mode: 'open' });
-    this.render();
+    this.changeAttributes = ['page'];
+    this.styleTemplate = document.getElementById('page-container-styles')?.innerHTML || '';
+    // If you don't bind the handler, it doesn't have the correct 'this' context to update stuff
     this.handlePageChange = this.handlePageChange.bind(this);
+    this.handleRouteChange = this.handleRouteChange.bind(this);
     SubscribeEvent('page-changed', 'page-container', this.handlePageChange)
+    SubscribeEvent('url-changed', 'page-container', this.handleRouteChange)
+    RegisterRoute('/', this.renderWith, ['/home-page', '/home'], true)
+    RegisterRoute('/about-page', this.renderWith)
+    RegisterRoute('/table-experiments', this.renderWith)
+    RegisterRoute('/something-else', this.renderWith)
   }
 
-  private handlePageChange(eventName: string, data: any) {
+  handlePageChange(eventName: string, data: any) {
     if (eventName !== 'page-changed') {
-      throw new Error("This page is not defined");
+      throw new Error("This page change is not defined");
     }
-    let newPage = data.newPage;
-    this.innerHTML = `<div>${newPage}</div><${newPage}></${newPage}>`
+    this.renderWith(data.path)
   }
 
-  private render() {
-    const template = document.getElementById(this.templateName) as HTMLTemplateElement;
-    const styles = template.content.cloneNode(true);
-    const content = document.createElement('div');
-    content.innerHTML = this.innerHTML;
-    this.innerHTML = '';
+  handleRouteChange(eventName: string, data: any) {
+    if (eventName !== 'url-changed') {
+      throw new Error("This route change is not defined");
+    }
+    this.renderWith(data.path)
+  }
+  renderWith(page = '/') {
+    let currentPage = this.getAttribute('page')
+    let newPage = page.split('/')[1]
+    if (newPage === '') {
+      newPage = 'home-page'
+    }
+    if (currentPage !== newPage) {
+      this.setAttribute('page', newPage)
+      this.render()
+    }
+  }
 
-    this.shadowRoot!.appendChild(styles);
-    this.shadowRoot!.appendChild(content);
+  render() {
+    let page = this.getAttribute('page')
+    console.log(`Rendering page to : ${page}`);
+    this.shadow.innerHTML = this.styleTemplate || '';
+    this.shadow.innerHTML += `<${page}></${page}>`;
   }
 }
 
