@@ -10,4 +10,4 @@ cat static/index_foot.html >> dist/index.html
 # Copy this back for testing, it can be committed as well
 cp dist/index.html static/index.html
 
-npm run devserve
+npm run serve

@@ -6,6 +6,7 @@
   "scripts": {
     "build": "cp -a static/* dist/ && esbuild src/app.ts --bundle --sourcemap --target=chrome58,firefox57,safari11,edge16 --outdir=dist --minify",
     "dev": "lightmon shell -s rundev.sh -w .css,.html,.png,.svg,.jpg,.gif",
+    "serve": "node esbuild.config.js",
     "devserve": "esbuild src/app.ts --bundle --sourcemap --target=chrome58,firefox57,safari11,edge16 --outdir=dist --watch --servedir=dist --minify",
     "start": "esbuild src/app.ts --bundle --sourcemap --target=chrome58,firefox57,safari11,edge16 --outdir=dist --watch --servedir=dist --minify",
     "test": "jest"
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "esbuild": "^0.17.11",
+    "esbuild-serve": "^1.0.1",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
     "ts-jest": "^29.0.5"
