@@ -1,5 +1,5 @@
-import { BaseComponent, OpenShadowComponent } from './componentBase';
-import { GetCaller } from './helloPage'
+import { BaseComponent, OpenShadowComponent } from './componentBase.js';
+import { GetCaller } from './helloPage.js'
 
 class AboutPage extends OpenShadowComponent {
   constructor() {

@@ -1,4 +1,4 @@
-import { FireEvent } from './eventBroker'
+import { FireEvent } from './eventBroker.js'
 
 // the string "route" that pairs to the render function
 let routes: Map<string,Function> = new Map<string,Function>();

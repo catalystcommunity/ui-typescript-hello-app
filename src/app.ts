@@ -1,9 +1,10 @@
-import { RegisterRoute, RenderRoute, PushURL, UnregisterRoute } from './router';
-import { SubscribeEvent, UnsubscribeEvent, FireEvent} from './eventBroker';
-import { BaseComponent, OpenShadowComponent } from './componentBase';
+import { RegisterRoute, RenderRoute, PushURL, UnregisterRoute } from './router.js';
+import { SubscribeEvent, UnsubscribeEvent, FireEvent} from './eventBroker.js';
+import { BaseComponent, OpenShadowComponent } from './componentBase.js';
 // Other components to include
-import './homePage';
-import './aboutPage';
+import './homePage.js';
+import './aboutPage.js';
+
 
 // The core HelloApp is just there so app changes stay in code-land, not HTML document land
 // This addresses the refresh loop nicely and lets the heavier html/css changes be a separate concern

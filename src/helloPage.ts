@@ -1,4 +1,4 @@
-import { BaseComponent } from './componentBase';
+import { BaseComponent } from './componentBase.js';
 
 let globalCaller = 'World'
 

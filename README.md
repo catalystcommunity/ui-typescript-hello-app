@@ -24,7 +24,9 @@ This project requires lightmon as part of its workflow. Obviously you can do thi
 
 [Installing lightmon](https://github.com/reaganmcf/lightmon#installation)
 
-To try this project after that, you just `npm install` and `npm run dev`
+To try this project after that, you just `npm install` and `npm run build` and `npm run serve`
+
+If you want to run the server and compiler in automatice reloading methods, just do `npm run watch` in one terminal and `npm run serve` in another, and edit away. 
 
 We're trying to avoid using anything but the simplest of dependencies.
 
