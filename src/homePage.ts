@@ -1,4 +1,4 @@
-import { BaseComponent, OpenShadowComponent } from './componentBase';
+import { BaseComponent, OpenShadowComponent } from './componentBase.js';
 
 class HomePage extends BaseComponent {
   constructor() {

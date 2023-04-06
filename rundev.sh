@@ -11,3 +11,4 @@ cat static/index_foot.html >> dist/index.html
 cp dist/index.html static/index.html
 
 npm run serve
+
