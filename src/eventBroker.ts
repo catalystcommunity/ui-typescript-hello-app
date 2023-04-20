@@ -2,23 +2,28 @@ interface subscriptionCallback {
   (eventName: string, data: object | string | Array<any>): void;
 }
 
-let events = {}
+let events: Map<string,Map<string,Function>> = new Map<string,Map<string,Function>>()
+
 function SubscribeEvent(eventName: string, subscriber: string, callback:subscriptionCallback) {
-  let handler = (e: any) => {
+  let handler = (e:CustomEvent) => {
     callback(eventName, e.detail)
   }
-  if (events[eventName] === undefined || events[eventName] === null) {
-    events[eventName] = {}
+  if (events.get(eventName) === undefined || events.get(eventName) === null) {
+    events.set(eventName, new Map<string,Function>())
   }
-  events[eventName][subscriber] = handler
+  events.get(eventName)!.set(subscriber, handler)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   document.addEventListener(eventName, handler)
 }
 
 function UnsubscribeEvent(eventName: string, subscriber: string) :boolean {
-  let callback = events[eventName]?.[subscriber];
+  let callback = events.get(eventName)?.get(subscriber);
   if (callback) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     document.removeEventListener(eventName, callback)
-    delete events[eventName][subscriber]
+    events.get(eventName)?.delete(subscriber)
     return true
   }
   return false

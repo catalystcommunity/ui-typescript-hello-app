@@ -8,7 +8,7 @@ type renderFunc = (path: string) => void
 
 // Define the routes. Each route is described with a route path & a render function
 let RegisterRoute = (path: string, renderFunc: renderFunc, otherNames: Array<string> = [], isdefault = false): void => {
-  routes[path] = renderFunc;
+  routes.set(path, renderFunc);
   for(const other of otherNames) {
     routeEquivalents.set(other, path);
   }
@@ -20,12 +20,10 @@ let RegisterRoute = (path: string, renderFunc: renderFunc, otherNames: Array<str
 // Unload a route, for whatever reason, I'm not your parent
 let UnregisterRoute = (path: string): void => {
   if (path in routes) {
-    delete routes[path]
-  }
-  routeEquivalents.forEach((other, route) => {
-    console.log('other:', other, 'route:', route)
+    routes.delete(path);
+  } routeEquivalents.forEach((other, route) => { console.log('other:', other, 'route:', route)
     if (route === path) {
-      delete routeEquivalents[other]
+      routeEquivalents.delete(other)
     }
   });
 };
@@ -38,10 +36,10 @@ let sendChangedEvent = (path: string, state = {}): void => {
 // Run the route's Render function and return that string to the thing that cares
 let RenderRoute = (path: string) => {
   if (routeEquivalents.has(path)) {
-    return routes[routeEquivalents.get(path) || ''](path);
+    return routes.get(routeEquivalents.get(path) || '')!(path);
   }
-  if (path in routes) {
-    return routes[path](path);
+  if (routes.has(path)) {
+    return routes.get(path)!(path);
   }
   if (defaultRoute) {
     return defaultRoute(path);

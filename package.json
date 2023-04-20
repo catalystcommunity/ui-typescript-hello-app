@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "lightmon shell -s rundev.sh -w .css,.html,.png,.svg,.jpg,.gif",
-    "build": "tsc src/app.ts --module nodenext --outDir ./dist",
-    "watch": "tsc src/app.ts --module nodenext --outDir ./dist --watch",
+    "build": "tsc",
+    "watch": "tsc --watch",
     "serve": "node devserver.js",
     "start": "node devserver.js",
     "devserve": "esbuild src/app.ts --bundle --sourcemap --target=chrome58,firefox57,safari11,edge16 --outdir=dist --watch --servedir=dist --minify",

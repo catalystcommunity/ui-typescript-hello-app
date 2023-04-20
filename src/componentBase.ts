@@ -13,7 +13,9 @@ class BaseComponent extends HTMLElement {
   }
   attributeChangedCallback(property:string, oldValue:string, newValue:string) {
     if (oldValue === newValue) return;
-    this[ property ] = newValue;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    this[property] = newValue;
     this.postAttributeChange();
   }
   postAttributeChange() {}

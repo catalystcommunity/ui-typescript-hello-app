@@ -22,9 +22,9 @@ class HelloApp extends BaseComponent {
 
 // Custom menu element
 class CustomMenu extends OpenShadowComponent {
-  menuItems: string[];
-  menuRoutes: string[];
-  menu: Map<string, string>;
+  menuItems!: string[];
+  menuRoutes!: string[];
+  menu!: Map<string, string>;
 
   constructor() {
     super();
