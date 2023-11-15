@@ -4,6 +4,8 @@ import { BaseComponent, OpenShadowComponent } from './componentBase.js';
 // Other components to include
 import './homePage.js';
 import './aboutPage.js';
+import './tablePage.js';
+import { TablePage } from './tablePage.js';
 
 
 // The core HelloApp is just there so app changes stay in code-land, not HTML document land
@@ -123,5 +125,6 @@ class PageContainer extends OpenShadowComponent {
 
 customElements.define('page-container', PageContainer);
 customElements.define('custom-menu', CustomMenu);
+customElements.define('table-experiments', TablePage);
 
 customElements.define( 'hello-app', HelloApp );
