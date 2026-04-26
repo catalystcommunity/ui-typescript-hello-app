@@ -1,5 +1,5 @@
 {
-  "name": "@catalystsquad/ui-typescript-hello-app",
+  "name": "@catalystcommunity/ui-typescript-hello-app",
   "version": "1.0.0",
   "description": "Frontend app for the Catalyst Squad Hello World end to end workflow",
   "main": "dist/app.js",
