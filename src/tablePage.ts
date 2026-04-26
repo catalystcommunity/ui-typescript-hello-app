@@ -120,7 +120,7 @@ class HelloTable extends HTMLElement {
   }
   attributeChangedCallback(property:string, oldValue:string, newValue:string) {
     if (oldValue === newValue) return;
-    this[ property ] = newValue;
+    this.setAttribute(property, newValue);
     console.log('Setting ' + property + ' to new value: ' + newValue);
     this.render()
   }
@@ -158,7 +158,7 @@ class HelloRow extends HTMLElement {
   }
   attributeChangedCallback(property:string, oldValue:string, newValue:string) {
     if (oldValue === newValue) return;
-    this[ property ] = newValue;
+    this.setAttribute(property, newValue);
     console.log('Setting ' + property + ' to new value: ' + newValue);
     this.render()
   }
